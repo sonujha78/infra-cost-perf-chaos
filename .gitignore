@@ -7,3 +7,5 @@
 kubeconfig
 .env
 *.log
+*-config
+kubeconfig*
