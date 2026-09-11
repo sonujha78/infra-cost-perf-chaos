@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: load-generator
+  namespace: default
+spec:
+  containers:
+    - name: load-generator
+      image: busybox:1.36
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          echo "Starting load generation loop..."
+          i=0
+          while true; do
+            for j in $(seq 1 20); do
+              wget -q -O /dev/null http://demo-app.default.svc.cluster.local/ &
+            done
+            wait
+            i=$((i+1))
+            if [ $((i % 50)) -eq 0 ]; then
+              echo "Completed $i batches of 20 requests each"
+            fi
+          done
+      resources:
+        requests:
+          cpu: "50m"
+          memory: "32Mi"
+        limits:
+          cpu: "100m"
+          memory: "64Mi"
+  restartPolicy: Never

@@ -22,11 +22,11 @@ spec:
             - containerPort: 80
           resources:
             requests:
-              cpu: "2000m"      # deliberately over-provisioned — real usage will be ~20-50m
-              memory: "1Gi"     # deliberately over-provisioned — real usage will be ~10-20Mi
+              cpu: "50m"        # right-sized: VPA target was 25m, +100% headroom
+              memory: "300Mi"   # right-sized: VPA target was 250Mi, +20% headroom
             limits:
-              cpu: "2500m"
-              memory: "1.5Gi"
+              cpu: "200m"
+              memory: "400Mi"
           readinessProbe:
             httpGet:
               path: /
