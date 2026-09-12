@@ -38,3 +38,29 @@ anonymous pages swapped out instead — silently degrading to disk-speed
 memory access rather than failing fast. Lowering `vm.swappiness` makes
 the kernel prefer reclaiming page cache over swapping application
 memory, which is the right tradeoff for latency-sensitive DB/cache nodes.
+
+## Addendum: fs.inotify — found via a real failure, not planning
+
+While installing Chaos Mesh for Part 5, `chaos-controller-manager` crashed
+with `unable to start manager {"error": "too many open files"}`. This
+tied directly back to the same OS-level symptom noted earlier in
+`../cgroups/README.md` ("Failed to allocate directory watch") — both are
+`fs.inotify` limit exhaustion, not a file-descriptor (`nofile`) ulimit
+issue.
+
+| Parameter | Before | After |
+|-----------|--------|-------|
+| fs.inotify.max_user_watches | 65536 | 524288 |
+| fs.inotify.max_user_instances | 128 | 512 |
+
+Kubernetes controllers (Chaos Mesh's controller-manager included) watch
+large numbers of Kubernetes resources via the client-go informer
+framework, which relies on inotify-style watches under the hood at
+scale. The Ubuntu default of 65536 watches / 128 instances is tuned for
+desktop use, not for running multiple watch-heavy controllers alongside
+a full kind cluster, Prometheus, KEDA, and VPA on the same host.
+
+This is a real example of the task's point about kernel tuning: the
+fix wasn't planned in advance — it was found by hitting an actual
+production-style failure and diagnosing it via `kubectl logs`, not by
+copying a generic sysctl checklist.
