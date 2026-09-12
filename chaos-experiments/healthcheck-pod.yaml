@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: healthcheck-loop
+  namespace: default
+spec:
+  containers:
+    - name: healthcheck
+      image: busybox:1.36
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          success=0
+          fail=0
+          i=0
+          while [ $i -lt 120 ]; do
+            if wget -q -O /dev/null -T 2 http://demo-app.default.svc.cluster.local/; then
+              success=$((success+1))
+              echo "$(date +%T) OK"
+            else
+              fail=$((fail+1))
+              echo "$(date +%T) FAIL"
+            fi
+            i=$((i+1))
+            sleep 1
+          done
+          echo "TOTAL: success=$success fail=$fail"
+      resources:
+        requests:
+          cpu: "20m"
+          memory: "16Mi"
+  restartPolicy: Never

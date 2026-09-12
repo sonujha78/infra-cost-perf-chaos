@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-before-2
+  namespace: default
+spec:
+  mode: one
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      app: noisy-neighbor-2
+  stressors:
+    cpu:
+      workers: 16
+      load: 100
+  duration: "120s"

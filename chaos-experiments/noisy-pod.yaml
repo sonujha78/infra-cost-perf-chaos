@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: noisy-neighbor
+  labels:
+    app: noisy-neighbor
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: cost-perf-chaos-worker2
+  containers:
+  - name: noisy
+    image: nginx:alpine

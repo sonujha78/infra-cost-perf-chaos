@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: noisy-neighbor-3
+  labels:
+    app: noisy-neighbor
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: cost-perf-chaos-worker2
+  containers:
+  - name: noisy3
+    image: vish/stress
+    args: ["-cpus", "16"]

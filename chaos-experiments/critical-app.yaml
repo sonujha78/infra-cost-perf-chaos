@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: critical-app
+  labels:
+    app: critical-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: critical-app
+  template:
+    metadata:
+      labels:
+        app: critical-app
+    spec:
+      containers:
+      - name: critical-app
+        image: vish/stress   # simple CPU-load-generating image; ya apna demo-app bhi chal sakta hai
+        args: ["-cpus", "1"]
+        resources:
+          requests:
+            cpu: "500m"
+          limits:
+            cpu: "500m"

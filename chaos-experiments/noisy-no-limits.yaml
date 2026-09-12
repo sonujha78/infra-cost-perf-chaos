@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: noisy-neighbor
+  labels:
+    app: noisy-neighbor
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: cost-perf-chaos-worker2
+  containers:
+  - name: noisy
+    image: vish/stress
+    args: ["-cpus", "16"]   # node ke 12 cores se zyada — saturate karne ke liye
