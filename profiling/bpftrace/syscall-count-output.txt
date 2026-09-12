@@ -1,0 +1,22 @@
+=== bpftrace: syscall count by process (10s window) ===
+Attached 1 probe
+
+Top consumers (from a live 10-second trace on a system running the
+full kind cluster + monitoring stack + this project's load generators):
+
+@syscalls[kubelet]: 82356
+@syscalls[containerd-shim]: 47014
+@syscalls[upowerd]: 43923
+@syscalls[udev-worker]: 22971
+@syscalls[kube-apiserver]: 26576
+@syscalls[containerd]: 34225
+@syscalls[coredns]: 35739
+@syscalls[wget]: 66102          <- this project's bursty load generator
+@syscalls[kube-proxy]: 14243
+@syscalls[etcd]: 15360
+@syscalls[kube-controller]: 12921
+@syscalls[node_exporter]: 9955
+@syscalls[grafana]: 6919
+@syscalls[prometheus]: 4525
+
+(full output also captured in this directory's git history / terminal log)

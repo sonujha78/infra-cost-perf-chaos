@@ -1,0 +1,13 @@
+=== bpftrace: disk I/O latency histogram (15s window) ===
+Workload: dd if=/dev/zero of=/tmp/io-test-file bs=1M count=200 oflag=direct
+(200MB direct I/O write, measured throughput: 3.3 GB/s — confirms NVMe SSD)
+
+@latency_us:
+[8, 16)               10 |@@
+[16, 32)              46 |@@@@@@@@@@@@
+[32, 64)             159 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+[64, 128)             57 |@@@@@@@@@@@@@@@
+[128, 256)            84 |@@@@@@@@@@@@@@@@@@@@@@
+[256, 512)            28 |@@@@@@@
+[512, 1K)            196 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+[1K, 2K)              98 |@@@@@@@@@@@@@@@@@@@@@@@@@@
