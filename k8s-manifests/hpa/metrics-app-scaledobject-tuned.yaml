@@ -1,0 +1,32 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: metrics-app-scaledobject
+  namespace: default
+spec:
+  scaleTargetRef:
+    name: metrics-app
+  minReplicaCount: 2
+  maxReplicaCount: 10
+  triggers:
+    - type: prometheus
+      metadata:
+        serverAddress: http://kube-prom-stack-kube-prome-prometheus.monitoring.svc:9090
+        metricName: nginx_requests_per_second
+        query: sum(rate(nginx_http_requests_total[30s]))
+        threshold: "5"
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: 30    # TUNED: wait 30s of sustained high load before scaling up
+          policies:
+            - type: Percent
+              value: 50
+              periodSeconds: 30
+        scaleDown:
+          stabilizationWindowSeconds: 120   # TUNED: wait 2 minutes of sustained low load before scaling down
+          policies:
+            - type: Percent
+              value: 25
+              periodSeconds: 60
