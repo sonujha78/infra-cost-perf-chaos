@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: network-chaos-client
+  namespace: default
+  labels:
+    app: network-chaos-client
+spec:
+  containers:
+    - name: client
+      image: busybox:1.36
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          success=0
+          fail=0
+          retried_success=0
+          i=0
+          while [ $i -lt 90 ]; do
+            # Simulate a real client: try once, retry up to 2 more times on failure, with timeout
+            attempt=0
+            ok=0
+            while [ $attempt -lt 3 ]; do
+              if wget -q -O /dev/null -T 2 http://metrics-app.default.svc.cluster.local/; then
+                ok=1
+                break
+              fi
+              attempt=$((attempt+1))
+              sleep 0.5
+            done
+            if [ $ok -eq 1 ]; then
+              success=$((success+1))
+              if [ $attempt -gt 0 ]; then
+                retried_success=$((retried_success+1))
+                echo "$(date +%T) OK (after $attempt retries)"
+              else
+                echo "$(date +%T) OK"
+              fi
+            else
+              fail=$((fail+1))
+              echo "$(date +%T) FAIL (exhausted retries)"
+            fi
+            i=$((i+1))
+            sleep 1
+          done
+          echo "TOTAL: success=$success fail=$fail (of which recovered-via-retry=$retried_success)"
+      resources:
+        requests:
+          cpu: "20m"
+          memory: "16Mi"
+  restartPolicy: Never
