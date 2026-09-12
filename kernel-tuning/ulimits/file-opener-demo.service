@@ -1,0 +1,10 @@
+[Unit]
+Description=Demo service that opens many files (simulates a busy API server)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /tmp/file-opener.py
+LimitNOFILE=100000
+
+[Install]
+WantedBy=multi-user.target
